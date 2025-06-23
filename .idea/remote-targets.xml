@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="api-gateway" type="docker-compose" uuid="8d3db8a7-fd3b-480f-a65a-c60b9645235e">
+        <config>
+          <option name="targetPlatform">
+            <TargetPlatform />
+          </option>
+          <option name="configurationFiles">
+            <list>
+              <option value="C:\Users\abdou\Desktop\pharmacie microservice\docker-compose.yml" />
+            </list>
+          </option>
+          <option name="serviceName" value="api-gateway" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/opt/java/openjdk" />
+            <option name="javaVersionString" value="17.0.15" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

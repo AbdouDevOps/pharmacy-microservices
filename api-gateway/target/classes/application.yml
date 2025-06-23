@@ -1,0 +1,50 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: pharmacists-service
+          uri: lb://pharmacists-service
+          predicates:
+            - Path=/api/pharmacists/**
+          filters:
+            - RewritePath=/api/pharmacists/(?<segment>.*), /api/pharmacists/${segment}
+
+        - id: stock-service
+          uri: lb://stock-service
+          predicates:
+            - Path=/api/medicaments/**
+          filters:
+            - RewritePath=/api/medicaments/(?<segment>.*), /api/medicaments/${segment}
+
+        - id: statstiques-service
+          uri: lb://statstique-service
+          predicates:
+            - Path=/api/statstiques/**
+          filters:
+            - RewritePath=/api/statistiques/(?<segment>.*), /api/statistiques/${segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+
+
+

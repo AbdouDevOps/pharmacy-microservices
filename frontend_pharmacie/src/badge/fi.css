@@ -1,0 +1,12 @@
+/* Dans votre fichier CSS global */
+.badge-container, .badge-container * {
+  image-rendering: crisp-edges;
+  text-rendering: geometricPrecision;
+  shape-rendering: crispEdges;
+}
+
+.badge-container img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}

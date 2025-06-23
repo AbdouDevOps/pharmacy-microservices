@@ -1,0 +1,14 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.pharmamaestro</groupId>
+    <artifactId>pharmacie-microservice</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>api-gateway</module>
+        <module>pharmacists-service</module>
+        <module>stock-service</module>
+        <module>s</module>
+    </modules>
+</project>

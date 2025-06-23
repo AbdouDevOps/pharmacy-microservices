@@ -1,0 +1,250 @@
+version: '3.8'
+
+services:
+
+  # ----------------------------------------
+  # Frontend
+  # ----------------------------------------
+  frontend:
+    image: abdo/frontend-pharmacie:latest
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
+    networks:
+      - pharma-net
+    command: npm run dev -- --host
+
+  # ----------------------------------------
+  # Eureka Discovery Server
+  # ----------------------------------------
+  eureka-server:
+    image: abdo/eureka-server:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - pharma-net
+
+  # ----------------------------------------
+  # API Gateway
+  # ----------------------------------------
+  api-gateway:
+    image: abdo/api-gateway:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_APPLICATION_NAME=api-gateway
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+      - eureka.client.register-with-eureka=true
+      - eureka.client.fetch-registry=true
+    networks:
+      - pharma-net
+
+  # ----------------------------------------
+  # Pharmacists Service
+  # ----------------------------------------
+  personnel-service:
+    image: abdo/personnel-service:latest
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - rabbitmq
+      - mqtt-broker
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - spring.data.mongodb.uri=mongodb+srv://root:Abdo1324%25@cluster0.6tnqy.mongodb.net/PharmaMaestro?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true&connectTimeoutMS=10000&socketTimeoutMS=30000
+      - SPRING_APPLICATION_NAME=pharmacists-service
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+      - eureka.client.register-with-eureka=true
+      - eureka.client.fetch-registry=true
+    networks:
+      - pharma-net
+
+  # ----------------------------------------
+  # Stock Service
+  # ----------------------------------------
+  stock-service:
+    image: abdo/stock-service:latest
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - spring.data.mongodb.uri=mongodb+srv://abdoukarroum:hgtVPDSZHwIDdzWT@mycluster.bfjpv1r.mongodb.net/pharmacie?retryWrites=true&w=majority&appName=MyCluster
+      - SPRING_APPLICATION_NAME=stock-service
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+      - eureka.client.register-with-eureka=true
+      - eureka.client.fetch-registry=true
+    networks:
+      - pharma-net
+
+  # ----------------------------------------
+  # RabbitMQ
+  # ----------------------------------------
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - pharma-net
+
+  # ----------------------------------------
+  # MQTT Broker
+  # ----------------------------------------
+  mqtt-broker:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - pharma-net
+
+networks:
+  pharma-net:
+    driver: overlay
+
+
+
+
+
+
+
+
+
+
+
+
+
+# version: '3.8'
+
+# services:
+
+#   # ----------------------------------------
+#   # Frontend
+#   # ----------------------------------------
+#   frontend:
+#     build: ./frontend_pharmacie
+#     ports:
+#       - "5173:5173"
+#     depends_on:
+#       - api-gateway
+#     networks:
+#       - pharma-net
+#     command: npm run dev -- --host
+
+#   # ----------------------------------------
+#   # Eureka Discovery Server
+#   # ----------------------------------------
+#   eureka-server:
+#     build:
+#       context: ./eureka-server
+#     ports:
+#       - "8761:8761"
+#     networks:
+#       - pharma-net
+
+#   # ----------------------------------------
+#   # API Gateway
+#   # ----------------------------------------
+#   api-gateway:
+#     build:
+#       context: ./api-gateway
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       - eureka-server
+#     environment:
+#       - SPRING_APPLICATION_NAME=api-gateway
+#       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+#       - eureka.client.register-with-eureka=true
+#       - eureka.client.fetch-registry=true
+#     networks:
+#       - pharma-net
+
+#   # ----------------------------------------
+#   # Pharmacists Service (auth included here)
+#   # ----------------------------------------
+#   personnel-service:
+#     build:
+#       context: ./pharmacists-service
+#     ports:
+#       - "8082:8082"
+#     depends_on:
+#       - eureka-server
+#       - rabbitmq
+#       - mqtt-broker
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=default
+#       - spring.data.mongodb.uri=mongodb+srv://root:Abdo1324%25@cluster0.6tnqy.mongodb.net/PharmaMaestro?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true&connectTimeoutMS=10000&socketTimeoutMS=30000
+#       - SPRING_APPLICATION_NAME=pharmacists-service
+#       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+#       - eureka.client.register-with-eureka=true
+#       - eureka.client.fetch-registry=true
+#     networks:
+#       - pharma-net
+
+#   # ----------------------------------------
+#   # Gestion de Stock Service
+#   # ----------------------------------------
+#   stock-service:
+#     build:
+#       context: ./stock-service
+#     ports:
+#       - "8083:8083"
+#     depends_on:
+#       - eureka-server
+#       - rabbitmq
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=default
+#       - spring.data.mongodb.uri=mongodb+srv://abdoukarroum:hgtVPDSZHwIDdzWT@mycluster.bfjpv1r.mongodb.net/pharmacie?retryWrites=true&w=majority&appName=MyCluster
+#       - SPRING_APPLICATION_NAME=stock-service
+#       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka
+#       - eureka.client.register-with-eureka=true
+#       - eureka.client.fetch-registry=true
+#     networks:
+#       - pharma-net
+
+
+#   # ----------------------------------------
+#   # RabbitMQ
+#   # ----------------------------------------
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     ports:
+#       - "5672:5672" # message broker port
+#       - "15672:15672" # web UI
+#     networks:
+#       - pharma-net
+
+
+#   # ----------------------------------------
+#   # Mosquitto MQTT Broker
+#   # ----------------------------------------
+#   mqtt-broker:
+#     image: eclipse-mosquitto
+#     ports:
+#       - "1883:1883" # message broker port
+#       - "9001:9001" # web UI
+#     networks:
+#       - pharma-net
+
+# networks:
+#   pharma-net:
+#     driver: overlay
+
+
+
+
+
+
+
+
+
+
+

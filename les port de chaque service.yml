@@ -1,0 +1,31 @@
+front-pharmacie : 5173
+
+eureka-server : 8761
+
+api-gateway : 8081
+
+pharmacists-service : 8082
+
+stock-service : 8083
+
+statistique-service : 8084
+
+rabbitmq : 
+      - "5672:5672" # message broker port
+      - "15672:15672" # web UI
+
+mqtt-broker : 
+      - "1883:1883" # message broker port
+      - "9001:9001" # web UI
+
+cree des conteneurs : docker-compose build --no-cache
+executer tout les conteneurs : docker-compose up -d
+
+
+docker swarm init : pour créer une swarm
+docker stack deploy -c docker-compose.yml pharma-stack : pour créer une stack
+docker stack rm pharma-stack : pour supprimer une stack
+mettre à jour (recréer automatiquement) : docker service update --force pharma-stack_rabbitmq
+
+docker stack services pharma-stack : pour voir les services
+docker ps : pour voir les conteneurs
